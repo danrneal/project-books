@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ book.title }}
+{% endblock %}
+
+{% block main %}
+
+    <div class="row mb-3">
+        <h1>{{ book.title }}</h1>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-auto">
+            <p class="text-right">Author:</p>
+            <p class="text-right">Publication Year:</p>
+            <p class="text-right">ISBN:</p>
+            {% if goodreads %}
+                <p class="text-right">Goodreads Rating:</p>
+            {% endif %}
+        </div>
+        <div class="col-auto">
+            <p class="text-left">{{ book.author }}</p>
+            <p class="text-left">{{ book.year }}</p>
+            <p class="text-left">{{ book.isbn }}</p>
+            {% if goodreads %}
+                <p class="text-left">{{ goodreads.average_rating }} ({{ goodreads.work_ratings_count }})</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row-12 mb-5">
+        <form class="needs-validation" action="/{{ book.isbn }}" method="post" novalidate>
+            <div class="form-group">
+                <div class="d-inline p-3">Rating:</div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="rating" id="1-star" value="1" required>
+                    <label class="form-check-label" for="1-star">1</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="rating" id="2-star" value="2" required>
+                    <label class="form-check-label" for="2-star">2</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="rating" id="3-star" value="3" required>
+                    <label class="form-check-label" for="3-star">3</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="rating" id="4-star" value="4" required>
+                    <label class="form-check-label" for="4-star">4</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="rating" id="5-star" value="5" required>
+                    <label class="form-check-label mr-3" for="5-star">5</label>
+                    <div class="invalid-feedback">
+                        Rating may not be left blank.
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" name="review" placeholder="Write your review" rows="5" required></textarea>
+                <div class="invalid-feedback">
+                    Review may not be left blank.
+                </div>
+                <small class="form-text text-muted">If you have already reviewed this book, submitting a new review will replace it.</small>
+            </div>
+            <button class="btn btn-success" type="submit">Submit</button>
+        </form>
+    </div>
+
+    {% if reviews %}
+        <div class="row-12">
+            <h3 class="mb-3">Reviews</h3>
+            {% for review in reviews %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ review.username }}</h4>
+                        <h6 class="card-subtitle mb-2 text-muted">Rating: {{ review.rating }}</h6>
+                        <p class="card-text">{{ review.review }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+    </script>
+
+{% endblock %}
