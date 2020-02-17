@@ -1,38 +1,63 @@
-# Project 1: Books
+# Books
 
-Web Programming with Python and JavaScript
+This flask-based app stores a database of books and allows users to leave
+reviews about the books on the site.
 
-## Description
+## Set-up
 
-This flask-based app stores a database of books and allows users to leave reviews about the books on the site.
+Set-up a virtual environment and activate it:
+```
+python3 venv venv
+source /venv/bin/activate
+```
+You should see (venv) before your command prompt now. (You can type `deactivate`
+to exit the virtual environment any time.)
 
-## What is in each file
+Install the requirements:
+```
+pip install -r requirements.txt
+```
 
-* application.py
-    * This file contains all the server-side Flask logic that the web application needs.
-    * It handles each route and redirects users to the appropriate page or renders the appropriate template.
-    * It handles any look-ups or updates needed by the database.
-* import.py
-    * This file takes a csv file called books.csv and inserts each book into the database.
-* .gitignore
-    * This file tells git which files to ignore when submitting.
-    * Useful for setting up a virtual environment.
-    * Also useful for ignoring a .env file holding environmental variables such as my goodreads api key.
-* requirements.txt
-    * Holds the app's dependencies.
-    * Added python-dotenv (to handle using a .env file) and requests (to handle the api calls)
-* books.csv
-    * List of books that was provided with the distribution code.
-* templates/layout.html
-    * Layout template that is the base for all the other pages
-    * Contains the navbar as well as a header for flashed alert messages
-* templates/index.html
-    * Contains a form allowing users to search books based on ISBN, author, or title.
-    * After a search, displays of table or returned results with a link for each book.
-* templates/register.html
-    * A form for users to register with the site, requiring a unique username, a password, and the password typed again.
-* templates/login.html
-    * A form for previously registered users to sign in.
-* templates/book.html
-    * A page displaying information about a specific book including reviews left by other users.
-    * A form allowing a user to submit their own review or update a previous review they submitted.
+Set up your environment variables:
+```
+touch .env
+echo FLASK_APP="application.py" >> .env
+echo DATABASE_URL="postgres://XXX" >> .env
+echo GOODREADS_KEY="XXX" >> .env
+```
+
+## Usage
+
+Make sure you are in the virtual environment (you should see (venv) before your
+command prompt). If not `source /venv/bin/activate` to enter it.
+
+```
+Usage: flask run
+```
+
+#### import.py
+
+Included is an import script that takes as an input books.csv and imports each
+entry as a book in the database.  Below is an example books.csv to illustrate
+the format the file should be in.
+
+```
+isbn,title,author,year
+0380795272,Krondor: The Betrayal,Raymond E. Feist,1998
+1416949658,The Dark Is Rising,Susan Cooper,1973
+```
+
+A books.csv file is included in this repo with 5000 books.  You may add or
+replace with your own books.csv.
+
+```
+Usage: import.py
+```
+
+## Credit
+
+[HarvardX: CS50's Web Programming with Python and JavaScript](https://www.edx.org/course/cs50s-web-programming-with-python-and-javascript)
+
+## License
+
+Books is licensed under the [MIT license](https://github.com/danrneal/books/blob/master/LICENSE).
