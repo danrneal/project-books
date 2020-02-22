@@ -54,6 +54,14 @@ replace with your own books.csv.
 Usage: import.py
 ```
 
+## Screenshots
+
+![](https://i.imgur.com/ll4rUIB.png)
+
+![](https://i.imgur.com/Nt95oJA.png)
+
+![](https://i.imgur.com/HQijpIM.png)
+
 ## Credit
 
 [HarvardX: CS50's Web Programming with Python and JavaScript](https://www.edx.org/course/cs50s-web-programming-with-python-and-javascript)
