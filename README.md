@@ -1,4 +1,4 @@
-# Books
+# Project: Books
 
 This flask-based app stores a database of books and allows users to leave
 reviews about the books on the site.
