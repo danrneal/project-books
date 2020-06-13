@@ -17,16 +17,21 @@ def main():
     with open('books.csv') as csvfile:
         reader = csv.reader(csvfile)
         next(reader)
-        for row in reader:
+        for isbn, title, author, year in reader:
+            author_id = db.execute(
+                "INSERT INTO authors (name) VALUES(:name) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id", {
+                    "name": author
+                }
+            ).fetchone()[0]
             db.execute(
-                "INSERT INTO books (isbn, title, author, year) VALUES(:isbn, :title, :author, :year)", {
-                    "isbn": row[0],
-                    "title": row[1],
-                    "author": row[2],
-                    "year": row[3]
+                "INSERT INTO books (isbn, title, author_id, year) VALUES(:isbn, :title, :author_id, :year) ON CONFLICT (isbn) DO NOTHING", {
+                    "isbn": isbn,
+                    "title": title,
+                    "author_id": author_id,
+                    "year": year
                 }
             )
-            print(f"Added book: {', '.join(row)}")
+            print(f"Added book: {isbn}, {title}, {author}, {year}")
         db.commit()
 
 
