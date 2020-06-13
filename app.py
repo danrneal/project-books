@@ -51,6 +51,7 @@ def index():
                 "search": f"%{query}%"
             }
         ).fetchall()
+        db.close()
 
         if not books:
             flash("Search returned no results.", "danger")
@@ -85,6 +86,7 @@ def register():
             }
         ).fetchone()
         db.commit()
+        db.close()
 
         pattern = re.compile(r'\d.*?[A-Z].*?[a-z].*[^\da-zA-Z]')
 
@@ -141,6 +143,7 @@ def login():
                 "username": username
             }
         ).fetchone()
+        db.close()
 
         if not user or not check_password_hash(user["hash"], password):
             flash("Invalid username and/or password", "danger")
@@ -204,11 +207,13 @@ def book(isbn):
             }
         )
         db.commit()
+        db.close()
 
         flash("Review submitted or updated!", "success")
         return redirect(f"/{isbn}")
 
     else:
+        db.close()
         goodreads = None
         if GOODREADS_KEY:
             response = requests.get(
@@ -236,6 +241,7 @@ def api(isbn):
             "isbn": isbn
         }
     ).fetchone()
+    db.close()
 
     if not book:
         abort(404)
