@@ -45,8 +45,11 @@ def index():
 
     books = None
     if query and field:
+        if field == "author":
+            field = "authors.name"
+
         books = db.execute(
-            f"SELECT * FROM books WHERE {field} ILIKE :search",
+            f"SELECT isbn, title, year, authors.name AS author FROM books LEFT JOIN authors ON authors.id = books.author_id WHERE {field} ILIKE :search",
             {
                 "search": f"%{query}%"
             }
@@ -78,8 +81,8 @@ def register():
 
         hashed_password = generate_password_hash(password)
 
-        user_id = db.execute(
-            "INSERT INTO users (username, hash) VALUES(:username, :hash) ON CONFLICT DO NOTHING RETURNING id",
+        user = db.execute(
+            "INSERT INTO users (username, hash) VALUES(:username, :hash) ON CONFLICT (username) DO NOTHING RETURNING id",
             {
                 "username": username,
                 "hash": hashed_password
@@ -90,7 +93,7 @@ def register():
 
         pattern = re.compile(r'\d.*?[A-Z].*?[a-z].*[^\da-zA-Z]')
 
-        if not user_id:
+        if not user:
             flash("Username already taken.", "danger")
             return render_template("register.html")
         elif pattern.search(password) and len(password) >= 8:
@@ -100,7 +103,7 @@ def register():
             flash("Passwords must match.", "danger")
             return render_template("register.html")
 
-        session["user_id"] = user_id[0]
+        session["user_id"] = user["id"]
 
         return redirect("/")
 
@@ -169,7 +172,7 @@ def book(isbn):
         return redirect("/login")
 
     reviews = db.execute(
-        "SELECT books.id, isbn, title, author, year, rating, review, username FROM books LEFT JOIN reviews ON reviews.book_id = books.id LEFT JOIN users ON reviews.user_id = users.id WHERE isbn = :isbn",
+        "SELECT books.id, isbn, title, year, authors.name AS author, rating, review, username FROM books LEFT JOIN authors ON authors.id = books.author_id LEFT JOIN reviews ON reviews.book_id = books.id LEFT JOIN users ON reviews.user_id = users.id WHERE isbn = :isbn",
         {
             "isbn": isbn
         }
@@ -236,7 +239,7 @@ def book(isbn):
 @app.route("/api/<isbn>")
 def api(isbn):
     book = db.execute(
-        "SELECT isbn, title, author, year, AVG(rating), COUNT(review) FROM books LEFT JOIN reviews ON reviews.book_id = books.id GROUP BY books.id HAVING isbn = :isbn",
+        "SELECT isbn, title, year, authors.name AS author, AVG(rating), COUNT(review) FROM books LEFT JOIN authors ON authors.id = books.author_id LEFT JOIN reviews ON reviews.book_id = books.id GROUP BY books.id, authors.id HAVING isbn = :isbn",
         {
             "isbn": isbn
         }
@@ -260,3 +263,7 @@ def api(isbn):
     }
 
     return response
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
